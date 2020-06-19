@@ -38,8 +38,7 @@ public class SettingActivity extends AppCompatActivity {
         //сначала указываем нужные разрешения
         int permissionsStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         //если разрешение есть
-        if (permissionsStatus== PackageManager.PERMISSION_GRANTED){
-            //newImage(fileName);
+        if (permissionsStatus == PackageManager.PERMISSION_GRANTED) {
             btnApply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -47,7 +46,7 @@ public class SettingActivity extends AppCompatActivity {
                     newImage(fileName);
                 }
             });
-        }else {
+        } else {
             //просим разрешение на чтение хранилища
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSION_READ_STORAGE);
         }
@@ -55,12 +54,10 @@ public class SettingActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_CODE_PERMISSION_READ_STORAGE:
-                if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    //newImage(fileName);
-
-                }else{
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
                     Toast.makeText(SettingActivity.this, "Вы не разрешили доступ к файлам"
                             , Toast.LENGTH_LONG)
                             .show();
@@ -70,21 +67,21 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     //Добавляем картинку
-    private void newImage(String fileName){
-        if (fileName!=null){
-            if (isExternalStorageReadable()){
+    private void newImage(String fileName) {
+        if (fileName != null) {
+            if (isExternalStorageReadable()) {
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
-                if (file.exists() && file.isFile()){
+                if (file.exists() && file.isFile()) {
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.putExtra("imgName", file.getAbsolutePath());
                     startActivity(intent);
-                }else {
+                } else {
                     Toast.makeText(SettingActivity.this, "Файла не существует!"
                             , Toast.LENGTH_LONG)
                             .show();
                 }
             }
-        }else{
+        } else {
             Toast.makeText(SettingActivity.this, "Имя файла пустое"
                     , Toast.LENGTH_LONG)
                     .show();
@@ -92,9 +89,6 @@ public class SettingActivity extends AppCompatActivity {
 
 
     }
-
-
-
 
     /* Проверка внутреннего хранилища на доступность записи */
     public boolean isExternalStorageWritable() {
@@ -104,6 +98,7 @@ public class SettingActivity extends AppCompatActivity {
         }
         return false;
     }
+
     /* Проверка внутреннего хранилища на доступность чтения */
     public boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
