@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
     private Button btn1;
     private Button btn2;
@@ -27,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private Button normal;
     private Button btnSettings;
     private TextView textView;
+    private Bundle arguments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,13 +139,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        Bundle arguments = getIntent().getExtras();
+        arguments = getIntent().getExtras();
         if (arguments != null) {
-            String name = arguments.get("imgName").toString();
-            Bitmap bitmapFactory = BitmapFactory.decodeFile(name);
-            ImageView im = findViewById(R.id.imageView);
-            im.setImageBitmap(bitmapFactory);
-            findViewById(R.id.imageView).setVisibility(View.VISIBLE);
+            try{
+                String nameFile = arguments.get("imgName").toString();
+                if (!nameFile.isEmpty()){
+                    Bitmap bitmapFactory = BitmapFactory.decodeFile(nameFile);
+                    ImageView im = findViewById(R.id.imageView);
+                    im.setImageBitmap(bitmapFactory);
+                    findViewById(R.id.imageView).setVisibility(View.VISIBLE);
+                }
+            }catch (Exception e){
+
+            }
         }
     }
 
