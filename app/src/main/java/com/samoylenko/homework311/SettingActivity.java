@@ -75,9 +75,6 @@ public class SettingActivity extends AppCompatActivity {
             if (isExternalStorageReadable()){
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
                 if (file.exists() && file.isFile()){
-                    //ImageView im = findViewById(R.id.imageView);
-                    //Bitmap bitmapFactory = BitmapFactory.decodeFile(file.getAbsolutePath());
-                    //im.setImageBitmap(bitmapFactory);
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.putExtra("imgName", file.getAbsolutePath());
                     startActivity(intent);
