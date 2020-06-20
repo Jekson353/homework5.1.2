@@ -8,13 +8,10 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,34 +32,39 @@ public class SettingActivity extends AppCompatActivity {
         imgName = findViewById(R.id.image_name);
         btnApply = findViewById(R.id.button_apply);
 
-        //сначала указываем нужные разрешения
-        int permissionsStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        //если разрешение есть
-        if (permissionsStatus == PackageManager.PERMISSION_GRANTED) {
-            btnApply.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        btnApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (hasPermissions()){
                     fileName = imgName.getText().toString();
                     newImage(fileName);
+                }else{
+                    //просим разрешение на чтение хранилища
+                    ActivityCompat.requestPermissions(SettingActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSION_READ_STORAGE);
                 }
-            });
-        } else {
-            //просим разрешение на чтение хранилища
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSION_READ_STORAGE);
-        }
+            }
+        });
+
+    }
+
+    private boolean hasPermissions(){
+        //указываем нужные разрешения
+        int permissionsStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        //если разрешение есть
+        return permissionsStatus == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE_PERMISSION_READ_STORAGE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                } else {
-                    Toast.makeText(SettingActivity.this, "Вы не разрешили доступ к файлам"
-                            , Toast.LENGTH_LONG)
-                            .show();
-                }
-                return;
+        if (requestCode == REQUEST_CODE_PERMISSION_READ_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fileName = imgName.getText().toString();
+                newImage(fileName);
+            } else {
+                Toast.makeText(SettingActivity.this, "Вы не разрешили доступ к файлам"
+                        , Toast.LENGTH_LONG)
+                        .show();
+            }
         }
     }
 
@@ -72,9 +74,10 @@ public class SettingActivity extends AppCompatActivity {
             if (isExternalStorageReadable()) {
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
                 if (file.exists() && file.isFile()) {
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intent = new Intent();
                     intent.putExtra("imgName", file.getAbsolutePath());
-                    startActivity(intent);
+                    setResult(RESULT_OK, intent);
+                    this.finish();
                 } else {
                     Toast.makeText(SettingActivity.this, "Файла не существует!"
                             , Toast.LENGTH_LONG)
@@ -86,8 +89,6 @@ public class SettingActivity extends AppCompatActivity {
                     , Toast.LENGTH_LONG)
                     .show();
         }
-
-
     }
 
     /* Проверка внутреннего хранилища на доступность записи */

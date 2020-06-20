@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         init();
     }
 
-    public void init(){
+    public void init() {
 
         btn1 = findViewById(R.id.button1);
         btn2 = findViewById(R.id.button2);
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 10);
             }
         });
 
@@ -139,19 +140,31 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        arguments = getIntent().getExtras();
-        if (arguments != null) {
-            try{
-                String nameFile = arguments.get("imgName").toString();
-                if (!nameFile.isEmpty()){
-                    Bitmap bitmapFactory = BitmapFactory.decodeFile(nameFile);
-                    ImageView im = findViewById(R.id.imageView);
-                    im.setImageBitmap(bitmapFactory);
-                    findViewById(R.id.imageView).setVisibility(View.VISIBLE);
-                }
-            }catch (Exception e){
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 10) {
+            if (resultCode == RESULT_OK) {
+                arguments = data.getExtras();
+                if (arguments != null) {
+                    try {
+                        String nameFile = Objects.requireNonNull(arguments.get("imgName")).toString();
+                        if (!nameFile.isEmpty()) {
+                            Bitmap bitmapFactory = BitmapFactory.decodeFile(nameFile);
+                            ImageView im = findViewById(R.id.imageView);
+                            im.setImageBitmap(bitmapFactory);
+                            findViewById(R.id.imageView).setVisibility(View.VISIBLE);
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, "Ошибка установки картинки"
+                                , Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
             }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
